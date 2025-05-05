@@ -3,7 +3,11 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Scissors } from "lucide-react";
 
-const Navbar = () => {
+interface NavbarProps {
+  onLoginClick?: () => void;
+}
+
+const Navbar: React.FC<NavbarProps> = ({ onLoginClick }) => {
   return (
     <nav className="bg-white shadow-sm">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -30,6 +34,12 @@ const Navbar = () => {
             <Link to="/analytics" className="px-3 py-2 text-sm font-medium text-textile-600 hover:text-textile-900">
               Analytics
             </Link>
+            <button
+              onClick={onLoginClick}
+              className="ml-4 rounded-md bg-textile-900 px-4 py-2 text-sm font-medium text-white hover:bg-textile-800"
+            >
+              Login
+            </button>
           </div>
         </div>
       </div>

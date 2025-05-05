@@ -1,14 +1,17 @@
 
-import React from "react";
+import React, { useState } from "react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Hero from "@/components/home/Hero";
 import FeatureSection from "@/components/home/FeatureSection";
+import LoginModal from "@/components/auth/LoginModal";
 
 const Index = () => {
+  const [showLoginModal, setShowLoginModal] = useState(false);
+
   return (
     <div className="flex min-h-screen flex-col">
-      <Navbar />
+      <Navbar onLoginClick={() => setShowLoginModal(true)} />
       <main className="flex-grow">
         <Hero />
         
@@ -35,6 +38,9 @@ const Index = () => {
         />
       </main>
       <Footer />
+      
+      {/* Login Modal */}
+      <LoginModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} />
     </div>
   );
 };

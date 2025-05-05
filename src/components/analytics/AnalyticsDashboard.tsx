@@ -4,6 +4,7 @@ import { useData } from "@/context/DataContext";
 import ProgressChart from "./ProgressChart";
 import RejectionChart from "./RejectionChart";
 import TailorPerformance from "./TailorPerformance";
+import { Info } from "lucide-react";
 
 const AnalyticsDashboard = () => {
   const { items, loading, customers, fetchItemsByCustomerId } = useData();
@@ -43,6 +44,15 @@ const AnalyticsDashboard = () => {
     </div>
   );
 
+  const SectionExplanation = ({ title, description }: { title: string; description: string }) => (
+    <div className="mb-2 flex items-start gap-2 text-sm text-textile-600">
+      <Info className="mt-0.5 h-4 w-4 flex-shrink-0" />
+      <div>
+        <span className="font-medium">{title}:</span> {description}
+      </div>
+    </div>
+  );
+
   return (
     <div className="container mx-auto max-w-6xl px-4 py-8 animate-fade-in">
       <h1 className="mb-8 text-3xl font-bold text-textile-900">Analytics Dashboard</h1>
@@ -63,6 +73,10 @@ const AnalyticsDashboard = () => {
             </option>
           ))}
         </select>
+        <SectionExplanation 
+          title="Customer Selection" 
+          description="Choose a customer ID to view analytics specific to that customer's orders and production data."
+        />
       </div>
       
       {loading ? (
@@ -70,6 +84,12 @@ const AnalyticsDashboard = () => {
       ) : (
         <>
           {/* Summary Cards */}
+          <div className="mb-2">
+            <SectionExplanation 
+              title="Summary Metrics" 
+              description="These cards provide at-a-glance metrics about the selected customer's production status, including cutting and stitching progress and quality control outcomes."
+            />
+          </div>
           <div className="mb-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             <div className="rounded-lg bg-white p-6 shadow-md">
               <h3 className="mb-2 text-sm font-medium text-textile-500">Total Items</h3>
@@ -114,17 +134,35 @@ const AnalyticsDashboard = () => {
           </div>
           
           {/* Progress Chart */}
+          <div className="mb-2">
+            <SectionExplanation 
+              title="Progress Timeline" 
+              description="This chart shows the daily progression of cutting, stitching, and rejection counts over the last 7 days, helping identify trends and bottlenecks in production."
+            />
+          </div>
           <div className="mb-8">
             <ProgressChart items={items} />
           </div>
           
           {/* Two Column Charts */}
+          <div className="mb-2">
+            <SectionExplanation 
+              title="Quality and Performance Analysis" 
+              description="These charts break down rejection reasons and tailor performance metrics to help identify quality issues and recognize high-performing team members."
+            />
+          </div>
           <div className="mb-8 grid grid-cols-1 gap-8 md:grid-cols-2">
             <RejectionChart items={items} />
             <TailorPerformance items={items} />
           </div>
           
           {/* Stitching Issues */}
+          <div className="mb-2">
+            <SectionExplanation 
+              title="Common Stitching Issues" 
+              description="This section highlights recurring problems in the stitching process, categorized by severity level to prioritize quality improvements."
+            />
+          </div>
           <div className="mb-8 rounded-lg bg-white p-6 shadow-md">
             <h3 className="mb-4 text-lg font-medium text-textile-800">Common Stitching Issues</h3>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -154,6 +192,12 @@ const AnalyticsDashboard = () => {
           </div>
           
           {/* Recent Rejections */}
+          <div className="mb-2">
+            <SectionExplanation 
+              title="Recent Rejections" 
+              description="This table lists the most recent items that failed quality control, including details about the item, tailor, and rejection reason to facilitate follow-up and process improvement."
+            />
+          </div>
           <div className="rounded-lg bg-white p-6 shadow-md">
             <h3 className="mb-4 text-lg font-medium text-textile-800">Recent Rejections</h3>
             <div className="overflow-x-auto">

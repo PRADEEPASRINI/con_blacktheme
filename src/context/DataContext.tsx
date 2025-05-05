@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from "react";
 
 // Define types for our data models
@@ -43,11 +42,12 @@ const sampleCustomers = [
 // Generate sample data based on customer ID
 const generateSampleData = (customerId: string): ProductItem[] => {
   const items: ProductItem[] = [];
-  const clothTypes = ["Cotton", "Silk", "Wool", "Polyester", "Linen"];
-  const colors = ["Red", "Blue", "Green", "Black", "White", "Yellow"];
-  const sizes = ["S", "M", "L", "XL", "XXL"];
-  const tailors = ["Ravi", "Anjali", "Krish", "Devi", "Amaan", "Nisha"];
-  const rejectionReasons = ["Stitch Pull", "Color Fade", "Tear", "Pattern Issue"];
+  const clothTypes = ["Cotton", "Silk", "Wool", "Polyester", "Linen", "Denim", "Chiffon", "Velvet", "Satin", "Corduroy"];
+  const colors = ["Red", "Blue", "Green", "Black", "White", "Yellow", "Purple", "Navy", "Maroon", "Beige", "Grey", "Pink", "Orange", "Teal"];
+  const sizes = ["S", "M", "L", "XL", "XXL", "3XL", "4XL", "6", "8", "10", "12", "14", "16"];
+  const tailors = ["Ravi", "Anjali", "Krish", "Devi", "Amaan", "Nisha", "Priya", "Mohit", "Deepak", "Sanya"];
+  const rejectionReasons = ["Stitch Pull", "Color Fade", "Tear", "Pattern Issue", "Wrong Size", "Fabric Defect", "Button Misaligned", "Seam Imperfection"];
+  const supervisors = ["John Doe", "Jane Smith", "Raj Kumar", "Priya Shah", "Michael Chen"];
   
   const getRandomStatus = () => {
     const statuses = ["Not Started", "In Progress", "Done"];
@@ -60,50 +60,81 @@ const generateSampleData = (customerId: string): ProductItem[] => {
 
   let itemNames: string[] = [];
   
+  // Custom item names based on customer ID
   switch (customerId) {
     case "SFD12345":
-      itemNames = ["Men's Formal Shirt", "Men's Casual Shirt", "Women's Blouse", "Summer Dress", "Winter Jacket"];
+      itemNames = [
+        "Men's Formal Shirt", "Men's Casual Shirt", "Women's Blouse", "Summer Dress", 
+        "Winter Jacket", "Business Suit", "Silk Blazer", "Denim Jacket", 
+        "Office Trousers", "Cotton Dress", "Evening Gown", "Linen Shirt", 
+        "Wedding Dress", "Wool Coat", "Party Wear Dress"
+      ];
       break;
     case "SFD1234":
-      itemNames = ["Kids T-Shirt", "Kids Shorts", "Baby Romper", "Girl's Frock", "Boy's Shirt"];
+      itemNames = [
+        "Kids T-Shirt", "Kids Shorts", "Baby Romper", "Girl's Frock", "Boy's Shirt",
+        "Children's Pajamas", "School Uniform Set", "Toddler Jumper", "Kids Jeans",
+        "Baby Onesie", "Kids Sweater", "Girl's Leggings", "Boy's Blazer",
+        "Kids Party Dress", "Children's Jacket"
+      ];
       break;
     case "SFD116":
-      itemNames = ["Kurta", "Salwar", "Saree Blouse", "Sherwani", "Ethnic Jacket"];
+      itemNames = [
+        "Kurta", "Salwar", "Saree Blouse", "Sherwani", "Ethnic Jacket",
+        "Anarkali Suit", "Lehenga", "Churidar", "Dhoti Pants", "Nehru Jacket",
+        "Pathani Suit", "Ghagra Choli", "Kurti", "Sharara Set", "Dupatta"
+      ];
       break;
     case "SFD065":
-      itemNames = ["School Uniform Shirt", "School Uniform Pants", "Corporate Shirt", "Security Uniform", "Hotel Staff Uniform"];
+      itemNames = [
+        "School Uniform Shirt", "School Uniform Pants", "Corporate Shirt", "Security Uniform", 
+        "Hotel Staff Uniform", "Hospital Scrubs", "Chef Coat", "Airline Staff Uniform",
+        "Police Uniform", "Factory Worker Overalls", "Restaurant Server Uniform",
+        "Lab Coat", "Maintenance Staff Uniform", "Sports Team Uniform", "Hospitality Uniform"
+      ];
       break;
     default:
       itemNames = ["Generic Item"];
   }
 
-  // Generate 10-15 items per customer
-  const count = 10 + Math.floor(Math.random() * 6);
+  // Generate 12-15 items per customer (random count between this range)
+  const count = 12 + Math.floor(Math.random() * 4);
   
   for (let i = 0; i < count; i++) {
-    const itemName = itemNames[Math.floor(Math.random() * itemNames.length)];
+    const itemName = itemNames[i % itemNames.length];
     const cuttingStatus = getRandomStatus();
-    const stitchingStatus = cuttingStatus === "Not Started" ? "Not Started" : getRandomStatus();
+    // Make stitching status logically dependent on cutting status
+    const stitchingStatus = cuttingStatus === "Not Started" ? "Not Started" : 
+                            cuttingStatus === "In Progress" ? (Math.random() > 0.7 ? "In Progress" : "Not Started") : 
+                            getRandomStatus();
     const qualityStatus = stitchingStatus === "Done" ? (getRandomQualityStatus() as "Passed" | "Rejected") : undefined;
     
+    // Generate dates with more recent dates for newer items
+    const currentDate = new Date();
+    const daysAgo = Math.floor(Math.random() * 30); // 0-30 days ago
+    currentDate.setDate(currentDate.getDate() - daysAgo);
+    const formattedDate = currentDate.toISOString().split('T')[0];
+
     const item: ProductItem = {
       id: `${customerId}-${i + 1}`,
       customerId,
-      date: new Date(Date.now() - Math.floor(Math.random() * 30) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      date: formattedDate,
       itemName,
       size: sizes[Math.floor(Math.random() * sizes.length)],
       color: colors[Math.floor(Math.random() * colors.length)],
-      quantity: 10 + Math.floor(Math.random() * 91),
+      quantity: 10 + Math.floor(Math.random() * 91), // 10-100 quantity
       cuttingStatus,
       stitchingStatus,
       clothType: clothTypes[Math.floor(Math.random() * clothTypes.length)],
-      supervisor: "John Doe",
+      supervisor: supervisors[Math.floor(Math.random() * supervisors.length)],
     };
     
+    // Assign tailor if stitching has started
     if (stitchingStatus !== "Not Started") {
       item.tailor = tailors[Math.floor(Math.random() * tailors.length)];
     }
     
+    // Add rejection reason if quality check failed
     if (qualityStatus === "Rejected") {
       item.rejectedReason = rejectionReasons[Math.floor(Math.random() * rejectionReasons.length)];
     }
