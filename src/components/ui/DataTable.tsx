@@ -3,7 +3,7 @@ import React, { useState } from "react";
 
 export interface Column<T> {
   header: string;
-  accessor: keyof T | ((row: T) => React.ReactNode);
+  accessor: keyof T | ((row: T, index: number) => React.ReactNode);
   width?: string;
   className?: string;
 }
@@ -23,9 +23,9 @@ function DataTable<T>({
   onRowClick,
   isLoading = false,
 }: DataTableProps<T>) {
-  const renderCell = (item: T, column: Column<T>) => {
+  const renderCell = (item: T, column: Column<T>, index: number) => {
     if (typeof column.accessor === "function") {
-      return column.accessor(item);
+      return column.accessor(item, index);
     }
     return item[column.accessor] as React.ReactNode;
   };
@@ -67,15 +67,15 @@ function DataTable<T>({
               </td>
             </tr>
           ) : (
-            data.map((item) => (
+            data.map((item, rowIndex) => (
               <tr
                 key={keyExtractor(item)}
                 onClick={() => onRowClick && onRowClick(item)}
                 className={onRowClick ? "cursor-pointer" : ""}
               >
-                {columns.map((column, index) => (
-                  <td key={index} className={column.className}>
-                    {renderCell(item, column)}
+                {columns.map((column, colIndex) => (
+                  <td key={colIndex} className={column.className}>
+                    {renderCell(item, column, rowIndex)}
                   </td>
                 ))}
               </tr>

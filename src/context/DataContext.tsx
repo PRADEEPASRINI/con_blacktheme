@@ -37,6 +37,7 @@ const sampleCustomers = [
   { id: "SFD1234", name: "Kidswear batch" },
   { id: "SFD116", name: "Ethnic wear & kurtas" },
   { id: "SFD065", name: "Uniform bulk batch" },
+  { id: "custom", name: "Custom ID" },
 ];
 
 // Generate sample data based on customer ID
@@ -94,7 +95,12 @@ const generateSampleData = (customerId: string): ProductItem[] => {
       ];
       break;
     default:
-      itemNames = ["Generic Item"];
+      itemNames = [
+        "Custom Item 1", "Custom Item 2", "Custom Item 3", "Custom Item 4", 
+        "Custom Item 5", "Custom Item 6", "Custom Item 7", "Custom Item 8",
+        "Custom Item 9", "Custom Item 10", "Custom Item 11", "Custom Item 12",
+        "Custom Item 13", "Custom Item 14", "Custom Item 15"
+      ];
   }
 
   // Generate 12-15 items per customer (random count between this range)
