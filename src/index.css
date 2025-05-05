@@ -1,3 +1,6 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -35,19 +38,12 @@
     --radius: 0.5rem;
 
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
@@ -96,6 +92,84 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-medium tracking-tight;
+  }
+  
+  h1 {
+    @apply text-4xl md:text-5xl;
+  }
+  
+  h2 {
+    @apply text-3xl md:text-4xl;
+  }
+  
+  h3 {
+    @apply text-2xl md:text-3xl;
+  }
+}
+
+@layer components {
+  .feature-card {
+    @apply relative overflow-hidden rounded-lg bg-white p-6 shadow-md transition-all duration-300 hover:shadow-xl;
+  }
+  
+  .feature-card:hover .feature-overlay {
+    @apply opacity-100;
+  }
+  
+  .feature-overlay {
+    @apply absolute inset-0 flex flex-col items-center justify-center bg-black/70 opacity-0 transition-opacity duration-300;
+  }
+  
+  .btn-learn-more {
+    @apply mt-4 inline-flex items-center rounded-md bg-white px-4 py-2 text-sm font-medium text-black transition-colors hover:bg-gray-100;
+  }
+  
+  .table-container {
+    @apply w-full overflow-x-auto rounded-lg bg-white shadow-md;
+  }
+  
+  .data-table {
+    @apply w-full border-collapse;
+  }
+  
+  .data-table th {
+    @apply bg-textile-800 p-3 text-left text-sm font-medium text-white;
+  }
+  
+  .data-table td {
+    @apply border-t border-gray-200 p-3 text-sm;
+  }
+  
+  .data-table tr:hover {
+    @apply bg-gray-50;
+  }
+  
+  .status-badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+  }
+  
+  .status-badge.not-started {
+    @apply bg-gray-100 text-gray-800;
+  }
+  
+  .status-badge.in-progress {
+    @apply bg-blue-100 text-blue-800;
+  }
+  
+  .status-badge.done {
+    @apply bg-green-100 text-green-800;
+  }
+  
+  .status-badge.rejected {
+    @apply bg-red-100 text-red-800;
+  }
+  
+  .chart-container {
+    @apply rounded-lg bg-white p-4 shadow-md;
   }
 }
