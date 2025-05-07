@@ -21,7 +21,7 @@ const Navbar: React.FC<NavbarProps> = () => {
       {/* Logo / Title */}
       <div className="flex items-center gap-3 px-6 py-6 border-b border-zinc-700">
         <Scissors className="h-6 w-6" />
-        <span className="text-lg font-semibold">Garment Order Processing System</span>
+        <span className="text-lg font-semibold">Garment Production Management</span>
       </div>
 
       {/* Navigation Links */}
@@ -42,10 +42,7 @@ const Navbar: React.FC<NavbarProps> = () => {
 
       {/* Logout at bottom */}
       <div className="border-t border-zinc-700 px-6 py-4">
-        <button className="flex items-center gap-2 text-sm hover:text-red-500 transition">
-          <LogOut className="h-4 w-4" />
-          Logout
-        </button>
+        
       </div>
     </nav>
   );

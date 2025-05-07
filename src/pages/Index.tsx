@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -9,42 +10,37 @@ const Index = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
 
   return (
-    <div className="flex min-h-screen bg-black text-white">
-      {/* Sidebar Navbar */}
+    <div className="flex min-h-screen flex-col">
       <Navbar onLoginClick={() => setShowLoginModal(true)} />
-
-      {/* Main content area with margin to accommodate sidebar */}
-      <div className="ml-64 flex flex-col w-full">
-        <main className="flex-grow">
-          <Hero />
-
-          <FeatureSection
-            title="Quality Control"
-            description="Monitor and manage the quality of your textile products with our comprehensive quality control system. Track rejections, identify common issues, and improve your production quality."
-            imageSrc="https://images.unsplash.com/photo-1558599249-69938ec90b06?q=80&w=1920&auto=format&fit=crop"
-            linkTo="/quality-control"
-          />
-
-          <FeatureSection
-            title="Cutting Management"
-            description="Efficiently manage the cutting process for your textile products. Track progress, update statuses, and ensure smooth transitions to the stitching department."
-            imageSrc="https://images.unsplash.com/photo-1586744566771-f5d8661500e8?q=80&w=1920&auto=format&fit=crop"
-            imagePosition="right"
-            linkTo="/cutting-management"
-          />
-
-          <FeatureSection
-            title="Stitching Process"
-            description="Assign tailors, track stitching progress, and manage the entire process from cut fabric to finished product with our intuitive stitching management system."
-            imageSrc="https://images.unsplash.com/photo-1605060431885-472211c3275d?q=80&w=1920&auto=format&fit=crop"
-            linkTo="/stitching-process"
-          />
-        </main>
-
-        <Footer />
-      </div>
-
-      {showLoginModal && <LoginModal onClose={() => setShowLoginModal(false)} />}
+      <main className="flex-grow">
+        <Hero />
+        
+        <FeatureSection
+          title="Quality Control"
+          description="Monitor and manage the quality of your textile products with our comprehensive quality control system. Track rejections, identify common issues, and improve your production quality."
+          imageSrc="https://images.pexels.com/photos/6653225/pexels-photo-6653225.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+          linkTo="/quality-control"
+        />
+        
+        <FeatureSection
+          title="Cutting Management"
+          description="Efficiently manage the cutting process for your textile products. Track progress, update statuses, and ensure smooth transitions to the stitching department."
+          imageSrc="https://images.pexels.com/photos/4219648/pexels-photo-4219648.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+          imagePosition="right"
+          linkTo="/cutting-management"
+        />
+        
+        <FeatureSection
+          title="Stitching Process"
+          description="Assign tailors, track stitching progress, and manage the entire process from cut fabric to finished product with our intuitive stitching management system."
+          imageSrc="https://images.pexels.com/photos/4427642/pexels-photo-4427642.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+          linkTo="/stitching-process"
+        />
+      </main>
+      <Footer />
+      
+      {/* Login Modal */}
+      <LoginModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} />
     </div>
   );
 };

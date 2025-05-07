@@ -9,12 +9,14 @@ import CuttingManagementPage from "./pages/CuttingManagementPage";
 import StitchingProcessPage from "./pages/StitchingProcessPage";
 import AnalyticsPage from "./pages/AnalyticsPage";
 import NotFound from "./pages/NotFound";
+import Navbar from "@/components/layout/Navbar"; // Import Navbar
 
-// Optional Layout wrapper to apply global background and shared UI (like sidebar)
+// Layout wrapper to apply global background and shared UI (like sidebar)
 const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="min-h-screen bg-background text-foreground font-sans">
-      {children}
+    <div className="min-h-screen bg-background text-foreground font-sans flex">
+      <Navbar /> {/* Place Navbar on the left */}
+      <main className="flex-1 ml-64 p-6">{children}</main> {/* Main content area */}
     </div>
   );
 };
