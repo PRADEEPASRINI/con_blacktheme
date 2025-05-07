@@ -1,13 +1,8 @@
 {
-  "files": [],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
-  ],
   "compilerOptions": {
-    "baseUrl": ".",
+    "baseUrl": "src",  // Set baseUrl to 'src'
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["*"] // Match alias to point directly to the src folder
     },
     "noImplicitAny": false,
     "noUnusedParameters": false,

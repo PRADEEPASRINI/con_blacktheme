@@ -1,5 +1,4 @@
-
-import React, { useState } from "react";
+import React from "react";
 
 export interface Column<T> {
   header: string;
@@ -32,23 +31,23 @@ function DataTable<T>({
 
   if (isLoading) {
     return (
-      <div className="table-container">
+      <div className="table-container text-white bg-black">
         <div className="flex h-48 items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-t-2 border-textile-800"></div>
+          <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-t-2 border-white"></div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="table-container animate-fade-in">
-      <table className="data-table">
-        <thead>
+    <div className="table-container animate-fade-in text-white bg-black">
+      <table className="data-table w-full border border-gray-700">
+        <thead className="bg-gray-900">
           <tr>
             {columns.map((column, index) => (
               <th
                 key={index}
-                className={column.className}
+                className={`p-2 border border-gray-700 ${column.className ?? ""}`}
                 style={{ width: column.width }}
               >
                 {column.header}
@@ -61,7 +60,7 @@ function DataTable<T>({
             <tr>
               <td
                 colSpan={columns.length}
-                className="p-4 text-center text-textile-500"
+                className="p-4 text-center text-gray-400"
               >
                 No data available
               </td>
@@ -71,10 +70,17 @@ function DataTable<T>({
               <tr
                 key={keyExtractor(item)}
                 onClick={() => onRowClick && onRowClick(item)}
-                className={onRowClick ? "cursor-pointer" : ""}
+                className={`${
+                  onRowClick
+                    ? "cursor-pointer hover:bg-white hover:text-black transition-colors duration-200"
+                    : ""
+                }`}
               >
                 {columns.map((column, colIndex) => (
-                  <td key={colIndex} className={column.className}>
+                  <td
+                    key={colIndex}
+                    className={`p-2 border border-gray-700 ${column.className ?? ""}`}
+                  >
                     {renderCell(item, column, rowIndex)}
                   </td>
                 ))}

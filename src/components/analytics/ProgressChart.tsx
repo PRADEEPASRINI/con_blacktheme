@@ -1,4 +1,3 @@
-
 import React from "react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { ProductItem } from "@/context/DataContext";
@@ -56,19 +55,19 @@ const ProgressChart: React.FC<ProgressChartProps> = ({ items, days = 7 }) => {
   const data = generateChartData();
   
   return (
-    <div className="chart-container">
-      <h3 className="mb-4 text-lg font-medium text-textile-800">Progress Overview (Last {days} Days)</h3>
+    <div className="chart-container bg-black p-6 rounded-lg shadow-lg">
+      <h3 className="mb-4 text-lg font-medium text-white">Progress Overview (Last {days} Days)</h3>
       <div className="h-64">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
             data={data}
             margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
           >
-            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-            <XAxis dataKey="date" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
+            <CartesianGrid strokeDasharray="3 3" stroke="#333333" />
+            <XAxis dataKey="date" stroke="#FFFFFF" />
+            <YAxis stroke="#FFFFFF" />
+            <Tooltip contentStyle={{ backgroundColor: "#333333", borderColor: "#555555", color: "#FFFFFF" }} />
+            <Legend wrapperStyle={{ color: "#FFFFFF" }} />
             <Line 
               type="monotone" 
               dataKey="cut" 

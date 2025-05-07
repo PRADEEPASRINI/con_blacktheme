@@ -1,4 +1,3 @@
-
 import React from "react";
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { ProductItem } from "@/context/DataContext";
@@ -30,8 +29,9 @@ const RejectionChart: React.FC<RejectionChartProps> = ({ items }) => {
   const data = getRejectionData();
   
   return (
-    <div className="chart-container">
-      <h3 className="mb-4 text-lg font-medium text-textile-800">Rejection Reasons</h3>
+    <div className="chart-container bg-black text-white p-6 rounded-lg shadow-lg">
+      <h3 className="mb-4 text-lg font-medium">Rejection Reasons</h3>
+      
       {rejectedItems.length > 0 ? (
         <div className="h-72">
           <ResponsiveContainer width="100%" height="100%">
@@ -51,19 +51,19 @@ const RejectionChart: React.FC<RejectionChartProps> = ({ items }) => {
                 ))}
               </Pie>
               <Tooltip formatter={(value) => [`${value} items`, 'Count']} />
-              <Legend />
+              <Legend wrapperStyle={{ color: "#FFFFFF" }} />
             </PieChart>
           </ResponsiveContainer>
         </div>
       ) : (
         <div className="flex h-72 items-center justify-center">
-          <p className="text-textile-500">No rejected items to display</p>
+          <p className="text-gray-500">No rejected items to display</p>
         </div>
       )}
       
       <div className="mt-4">
-        <h4 className="mb-2 text-sm font-medium text-textile-700">Total Rejected Items</h4>
-        <p className="text-2xl font-bold text-textile-900">{rejectedItems.length}</p>
+        <h4 className="mb-2 text-sm font-medium">Total Rejected Items</h4>
+        <p className="text-2xl font-bold">{rejectedItems.length}</p>
       </div>
     </div>
   );

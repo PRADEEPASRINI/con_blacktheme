@@ -1,23 +1,31 @@
-
 import React, { useState } from "react";
 import { useData, ProductItem } from "@/context/DataContext";
 import DataTable, { Column } from "@/components/ui/DataTable";
 import { useToast } from "@/components/ui/use-toast";
 import { Check, Save } from "lucide-react";
 
+// Placeholder for analytics tracking
+const trackAnalytics = (event: string, data: object) => {
+  console.log(`Analytics Event: ${event}`, data);
+};
+
 const StitchingProcess = () => {
-  const { items, loading, updateItem, customers, fetchItemsByCustomerId } = useData();
-  const [selectedCustomerId, setSelectedCustomerId] = useState(customers[0].id);
+  const { items, loading, updateItem, fetchItemsByCustomerId } = useData();
+  const [searchId, setSearchId] = useState("");
+  const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Partial<ProductItem>>({});
   const [saving, setSaving] = useState(false);
   const { toast } = useToast();
 
-  const handleCustomerChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const customerId = e.target.value;
-    setSelectedCustomerId(customerId);
-    fetchItemsByCustomerId(customerId);
-    setEditingId(null);
+  const handleSearch = () => {
+    if (searchId.trim()) {
+      setSelectedCustomerId(searchId.trim());
+      fetchItemsByCustomerId(searchId.trim());
+      setEditingId(null);
+      // Track search event
+      trackAnalytics('Search Initiated', { customerId: searchId.trim() });
+    }
   };
 
   const handleEdit = (item: ProductItem) => {
@@ -29,12 +37,14 @@ const StitchingProcess = () => {
       });
       return;
     }
-    
+
     setEditingId(item.id);
     setEditForm({
       stitchingStatus: item.stitchingStatus,
       tailor: item.tailor || "",
     });
+    // Track edit initiation event
+    trackAnalytics('Edit Initiated', { itemId: item.id, itemName: item.itemName });
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -45,20 +55,27 @@ const StitchingProcess = () => {
   const handleSave = (item: ProductItem) => {
     setSaving(true);
 
-    // Simulate API call delay
     setTimeout(() => {
       const updatedItem = {
         ...item,
         ...editForm,
       };
-      
+
       updateItem(updatedItem);
       setEditingId(null);
       setSaving(false);
-      
+
       toast({
         title: "Stitching process updated",
         description: `${item.itemName} has been updated to ${editForm.stitchingStatus}.`,
+      });
+      
+      // Track save event
+      trackAnalytics('Stitching Process Updated', {
+        itemId: item.id,
+        itemName: item.itemName,
+        stitchingStatus: editForm.stitchingStatus,
+        tailor: editForm.tailor,
       });
     }, 600);
   };
@@ -88,7 +105,7 @@ const StitchingProcess = () => {
               name="tailor"
               value={editForm.tailor || ""}
               onChange={handleInputChange}
-              className="w-full rounded-md border border-textile-300 px-2 py-1 text-sm"
+              className="w-full rounded-md border border-textile-300 px-2 py-1 text-sm text-black" // Tailor field text color set to black
               autoFocus
             >
               <option value="">Select Tailor</option>
@@ -114,7 +131,7 @@ const StitchingProcess = () => {
               name="stitchingStatus"
               value={editForm.stitchingStatus}
               onChange={handleInputChange}
-              className="w-full rounded-md border border-textile-300 px-2 py-1 text-sm"
+              className="w-full rounded-md border border-textile-300 px-2 py-1 text-sm text-black" // Stitching Status field text color set to black
             >
               <option value="Not Started">Not Started</option>
               <option value="In Progress">In Progress</option>
@@ -183,9 +200,7 @@ const StitchingProcess = () => {
           );
         }
         return (
-          <span className="text-xs text-textile-400">
-            Cutting pending
-          </span>
+          <span className="text-xs text-textile-400">Cutting pending</span>
         );
       },
       width: "120px",
@@ -193,27 +208,25 @@ const StitchingProcess = () => {
   ];
 
   return (
-    <div className="container mx-auto max-w-6xl px-4 py-8">
+    <div className="container mx-auto max-w-6xl px-4 py-8 text-white"> {/* Outer page text color set to white */}
       <h1 className="mb-8 text-3xl font-bold text-textile-900">Stitching Process</h1>
-      
-      <div className="mb-6">
-        <label htmlFor="customer" className="mb-2 block text-sm font-medium text-textile-700">
-          Select Customer ID
-        </label>
-        <select
-          id="customer"
-          value={selectedCustomerId}
-          onChange={handleCustomerChange}
-          className="w-full rounded-md border border-textile-300 px-3 py-2 text-textile-900 md:w-1/3"
+
+      <div className="mb-6 flex flex-col gap-2 md:flex-row md:items-center">
+        <input
+          type="text"
+          placeholder="Enter Customer ID (e.g., SFD12345)"
+          value={searchId}
+          onChange={(e) => setSearchId(e.target.value)}
+          className="w-full rounded-md border border-textile-300 px-3 py-2 text-textile-900 md:w-1/3 text-black" // Search field text color set to black
+        />
+        <button
+          onClick={handleSearch}
+          className="mt-2 rounded-md bg-textile-900 px-4 py-2 text-sm font-medium text-white hover:bg-textile-800 md:mt-0"
         >
-          {customers.map((customer) => (
-            <option key={customer.id} value={customer.id}>
-              {customer.id}: {customer.name}
-            </option>
-          ))}
-        </select>
+          Search
+        </button>
       </div>
-      
+
       <DataTable
         columns={columns}
         data={filteredItems}
@@ -221,67 +234,6 @@ const StitchingProcess = () => {
         onRowClick={handleRowClick}
         isLoading={loading}
       />
-      
-      <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-3">
-        <div className="rounded-md bg-white p-4 shadow-md">
-          <h3 className="mb-2 text-lg font-medium text-textile-800">Tailor Assignments</h3>
-          <ul className="space-y-2 text-sm">
-            {["Ravi", "Anjali", "Krish", "Devi", "Amaan", "Nisha"].map(tailor => {
-              const count = filteredItems.filter(item => item.tailor === tailor).length;
-              return (
-                <li key={tailor} className="flex items-center justify-between">
-                  <span>{tailor}</span>
-                  <span className="rounded-full bg-textile-100 px-2 py-1 text-xs font-medium text-textile-800">
-                    {count} items
-                  </span>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-        
-        <div className="rounded-md bg-white p-4 shadow-md">
-          <h3 className="mb-2 text-lg font-medium text-textile-800">Progress Summary</h3>
-          <div className="space-y-3">
-            {["Not Started", "In Progress", "Done"].map(status => {
-              const count = filteredItems.filter(item => item.stitchingStatus === status).length;
-              const percentage = filteredItems.length > 0 ? Math.round((count / filteredItems.length) * 100) : 0;
-              let bgColor;
-              switch(status) {
-                case "Not Started": bgColor = "bg-textile-300"; break;
-                case "In Progress": bgColor = "bg-blue-500"; break;
-                case "Done": bgColor = "bg-green-500"; break;
-                default: bgColor = "bg-textile-300";
-              }
-              
-              return (
-                <div key={status}>
-                  <div className="flex items-center justify-between text-sm">
-                    <span>{status}</span>
-                    <span>{count} items ({percentage}%)</span>
-                  </div>
-                  <div className="mt-1 h-2 w-full overflow-hidden rounded-full bg-textile-100">
-                    <div 
-                      className={`h-full ${bgColor}`}
-                      style={{ width: `${percentage}%` }}
-                    ></div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-        
-        <div className="rounded-md bg-white p-4 shadow-md">
-          <h3 className="mb-2 text-lg font-medium text-textile-800">Instructions</h3>
-          <ul className="ml-5 list-disc text-sm text-textile-700">
-            <li>Click on any row to edit the stitching status and assign a tailor</li>
-            <li>Only items with "Done" cutting status can be processed</li>
-            <li>Items marked "Done" will be sent for quality control</li>
-            <li>Use the tailor assignment panel to balance workloads</li>
-          </ul>
-        </div>
-      </div>
     </div>
   );
 };

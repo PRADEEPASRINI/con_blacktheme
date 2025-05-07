@@ -1,47 +1,51 @@
-
 import React from "react";
-import { Link } from "react-router-dom";
-import { Scissors } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
+import { LogOut, Scissors, LayoutDashboard, FilePlus2, ClipboardList } from "lucide-react";
 
 interface NavbarProps {
   onLoginClick?: () => void;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ onLoginClick }) => {
+const navItems = [
+  { name: "Quality Control", icon: <Scissors className="h-5 w-5" />, to: "/quality-control" },
+  { name: "Cutting Management", icon: <Scissors className="h-5 w-5" />, to: "/cutting-management" },
+  { name: "Stitching Process", icon: <Scissors className="h-5 w-5" />, to: "/stitching-process" },
+  { name: "Analytics", icon: <Scissors className="h-5 w-5" />, to: "/analytics" },
+];
+
+const Navbar: React.FC<NavbarProps> = () => {
+  const location = useLocation();
+
   return (
-    <nav className="bg-white shadow-sm">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 justify-between">
-          <div className="flex items-center">
-            <Link to="/" className="flex items-center gap-2">
-              <Scissors className="h-6 w-6" />
-              <span className="text-xl font-semibold text-textile-900">TextileFlow</span>
-            </Link>
-          </div>
-          <div className="flex items-center space-x-4">
-            <Link to="/" className="px-3 py-2 text-sm font-medium text-textile-600 hover:text-textile-900">
-              Home
-            </Link>
-            <Link to="/quality-control" className="px-3 py-2 text-sm font-medium text-textile-600 hover:text-textile-900">
-              Quality Control
-            </Link>
-            <Link to="/cutting-management" className="px-3 py-2 text-sm font-medium text-textile-600 hover:text-textile-900">
-              Cutting Management
-            </Link>
-            <Link to="/stitching-process" className="px-3 py-2 text-sm font-medium text-textile-600 hover:text-textile-900">
-              Stitching Process
-            </Link>
-            <Link to="/analytics" className="px-3 py-2 text-sm font-medium text-textile-600 hover:text-textile-900">
-              Analytics
-            </Link>
-            <button
-              onClick={onLoginClick}
-              className="ml-4 rounded-md bg-textile-900 px-4 py-2 text-sm font-medium text-white hover:bg-textile-800"
-            >
-              Login
-            </button>
-          </div>
-        </div>
+    <nav className="fixed left-0 top-0 z-10 h-screen w-64 bg-zinc-900 shadow-lg text-white flex flex-col">
+      {/* Logo / Title */}
+      <div className="flex items-center gap-3 px-6 py-6 border-b border-zinc-700">
+        <Scissors className="h-6 w-6" />
+        <span className="text-lg font-semibold">Garment Order Processing System</span>
+      </div>
+
+      {/* Navigation Links */}
+      <div className="flex-1 py-4">
+        {navItems.map((item) => (
+          <Link
+            key={item.name}
+            to={item.to}
+            className={`flex items-center gap-3 px-6 py-3 text-sm hover:bg-zinc-800 transition ${
+              location.pathname === item.to ? "bg-zinc-800" : ""
+            }`}
+          >
+            {item.icon}
+            {item.name}
+          </Link>
+        ))}
+      </div>
+
+      {/* Logout at bottom */}
+      <div className="border-t border-zinc-700 px-6 py-4">
+        <button className="flex items-center gap-2 text-sm hover:text-red-500 transition">
+          <LogOut className="h-4 w-4" />
+          Logout
+        </button>
       </div>
     </nav>
   );
