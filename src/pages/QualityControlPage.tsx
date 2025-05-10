@@ -1,9 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useData, ProductItem } from "@/context/DataContext";
 import DataTable, { Column } from "@/components/ui/DataTable";
 import FileUpload from "@/components/ui/FileUpload";
 import { Check, Save } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+
+interface ColorGroup {
+  color: string;
+  clothType: string;
+  items: ProductItem[];
+}
 
 const QualityControl = () => {
   const { items, loading, updateItem, fetchItemsByCustomerId } = useData();
@@ -12,7 +18,28 @@ const QualityControl = () => {
   const [formData, setFormData] = useState<Partial<ProductItem>>({});
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [uniqueColorGroups, setUniqueColorGroups] = useState<ColorGroup[]>([]);
   const { toast } = useToast();
+
+  // Group items by unique colors
+  useEffect(() => {
+    const colorMap = new Map<string, ColorGroup>();
+    
+    items.forEach(item => {
+      const key = item.color;
+      if (!colorMap.has(key)) {
+        colorMap.set(key, {
+          color: item.color,
+          clothType: item.clothType || "",
+          items: [item]
+        });
+      } else {
+        colorMap.get(key)?.items.push(item);
+      }
+    });
+    
+    setUniqueColorGroups(Array.from(colorMap.values()));
+  }, [items]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,15 +49,17 @@ const QualityControl = () => {
     }
   };
 
-  const handleRowClick = (item: ProductItem) => {
-    setSelectedItem(item);
+  const handleRowClick = (colorGroup: ColorGroup) => {
+    // Use the first item in the color group as a representative
+    const representativeItem = colorGroup.items[0];
+    setSelectedItem(representativeItem);
     setFormData({
-      clothType: item.clothType,
-      color: item.color,
-      qualityStatus: item.qualityStatus || "Passed",
-      rejectedReason: item.rejectedReason,
-      supervisor: item.supervisor,
-      imageUrl: item.imageUrl,
+      clothType: colorGroup.clothType,
+      color: colorGroup.color,
+      qualityStatus: representativeItem.qualityStatus || "Passed",
+      rejectedReason: representativeItem.rejectedReason,
+      supervisor: representativeItem.supervisor || "",
+      imageUrl: representativeItem.imageUrl,
     });
   };
 
@@ -50,55 +79,102 @@ const QualityControl = () => {
 
     setSaving(true);
     setTimeout(() => {
-      const updatedItem = {
-        ...selectedItem,
-        ...formData,
-      };
+      // Update all items with the same color
+      const colorToUpdate = selectedItem.color;
+      const itemsToUpdate = items.filter(item => item.color === colorToUpdate);
+      
+      itemsToUpdate.forEach(item => {
+        const updatedItem = {
+          ...item,
+          qualityStatus: formData.qualityStatus,
+          rejectedReason: formData.rejectedReason,
+          supervisor: formData.supervisor,
+          imageUrl: formData.imageUrl,
+        };
+        updateItem(updatedItem);
+      });
 
-      updateItem(updatedItem);
       setSaving(false);
       setSaveSuccess(true);
 
       toast({
         title: "Quality check saved",
-        description: `Quality status for ${updatedItem.itemName} has been updated.`,
+        description: `Quality status for color ${colorToUpdate} has been updated.`,
       });
 
       setTimeout(() => setSaveSuccess(false), 2000);
     }, 800);
   };
 
-  const columns: Column<ProductItem>[] = [
-    { header: "Item", accessor: "itemName" },
-    { header: "Size", accessor: "size", width: "80px" },
+  const columns: Column<ColorGroup>[] = [
+    { header: "Cloth Type", accessor: "clothType" },
     { header: "Color", accessor: "color", width: "100px" },
     {
-      header: "Stitching Status",
-      accessor: (item) => (
-        <span className={`status-badge ${item.stitchingStatus.toLowerCase().replace(' ', '-')}`}>
-          {item.stitchingStatus}
+      header: "Dyeing Status",
+      accessor: () => (
+        <span className="status-badge done">
+          Done
         </span>
       ),
       width: "130px"
     },
     {
       header: "Quality Status",
-      accessor: (item) => {
-        if (!item.qualityStatus) return <span className="text-gray-400">Pending</span>;
+      accessor: (colorGroup) => {
+        const status = colorGroup.items[0].qualityStatus;
+        if (!status) return <span className="text-gray-400">Pending</span>;
         return (
-          <span className={`status-badge ${item.qualityStatus === "Passed" ? "done" : "rejected"}`}>
-            {item.qualityStatus}
+          <span className={`status-badge ${status === "Passed" ? "done" : "rejected"}`}>
+            {status}
           </span>
         );
       },
       width: "130px"
     },
     {
+      header: "Rejection Details",
+      accessor: (colorGroup) => {
+        const status = colorGroup.items[0].qualityStatus;
+        const reason = colorGroup.items[0].rejectedReason;
+        const imageUrl = colorGroup.items[0].imageUrl;
+        
+        if (status === "Rejected") {
+          return (
+            <div className="flex flex-col gap-2">
+              <span className="text-red-400">{reason || "Not specified"}</span>
+              {imageUrl && (
+                <div className="mt-1">
+                  <img 
+                    src={imageUrl} 
+                    alt={`Issue: ${reason}`} 
+                    className="h-16 w-16 rounded-md object-cover cursor-pointer hover:opacity-80" 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      window.open(imageUrl, '_blank');
+                    }}
+                  />
+                </div>
+              )}
+            </div>
+          );
+        }
+        return <span className="text-gray-400">N/A</span>;
+      },
+      width: "180px"
+    },
+    {
+      header: "Supervisor",
+      accessor: (colorGroup) => colorGroup.items[0].supervisor || "Not Assigned",
+      width: "120px"
+    },
+    {
       header: "Date",
-      accessor: "date",
+      accessor: (colorGroup) => colorGroup.items[0].date,
       width: "110px"
     },
   ];
+
+  const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
 
   return (
     <div className="container mx-auto max-w-6xl px-4 py-8 bg-black text-white">
@@ -125,8 +201,8 @@ const QualityControl = () => {
           <h2 className="mb-4 text-xl font-medium">Items List</h2>
           <DataTable
             columns={columns}
-            data={items.filter(item => item.stitchingStatus === "Done")}
-            keyExtractor={(item) => item.id}
+            data={uniqueColorGroups}
+            keyExtractor={(colorGroup) => colorGroup.color}
             onRowClick={handleRowClick}
             isLoading={loading}
           />
@@ -138,7 +214,7 @@ const QualityControl = () => {
           {selectedItem ? (
             <form onSubmit={handleSubmit} className="rounded-lg bg-zinc-900 p-6 shadow-md">
               <h3 className="mb-4 border-b border-gray-600 pb-2 text-lg font-medium">
-                {selectedItem.itemName}
+                {formData.color} Quality Check
               </h3>
 
               <div className="mb-4">
@@ -147,7 +223,7 @@ const QualityControl = () => {
                   type="text"
                   name="clothType"
                   value={formData.clothType || ""}
-                  onChange={handleInputChange}
+                  readOnly
                   className="w-full rounded-md border border-gray-600 bg-zinc-800 px-3 py-2 text-white"
                 />
               </div>
@@ -159,6 +235,16 @@ const QualityControl = () => {
                   name="color"
                   value={formData.color || ""}
                   readOnly
+                  className="w-full rounded-md border border-gray-600 bg-zinc-800 px-3 py-2 text-white"
+                />
+              </div>
+
+              <div className="mb-4">
+                <label className="mb-1 block text-sm font-medium">Date</label>
+                <input
+                  type="date"
+                  name="date"
+                  value={currentDate}
                   className="w-full rounded-md border border-gray-600 bg-zinc-800 px-3 py-2 text-white"
                 />
               </div>
@@ -185,6 +271,7 @@ const QualityControl = () => {
                       value={formData.rejectedReason || ""}
                       onChange={handleInputChange}
                       className="w-full rounded-md border border-gray-600 bg-zinc-800 px-3 py-2 text-white"
+                      required
                     >
                       <option value="">Select reason</option>
                       <option value="Stitch Pull">Stitch Pull</option>
@@ -240,7 +327,7 @@ const QualityControl = () => {
             </form>
           ) : (
             <div className="flex h-64 flex-col items-center justify-center rounded-lg bg-zinc-900 p-6 text-center shadow-md">
-              <p className="text-gray-400">Select an item from the list to perform quality inspection</p>
+              <p className="text-gray-400">Select a color from the list to perform quality inspection</p>
             </div>
           )}
         </div>

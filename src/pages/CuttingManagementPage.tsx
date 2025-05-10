@@ -36,6 +36,7 @@ const CuttingManagement = () => {
     setEditForm({
       cuttingStatus: item.cuttingStatus,
       supervisor: item.supervisor,
+      date: item.date,
     });
   };
 
@@ -115,7 +116,22 @@ const CuttingManagement = () => {
         ),
       width: "150px",
     },
-    { header: "Date", accessor: "date", width: "110px" },
+    {
+      header: "Date",
+      accessor: (item) => 
+        editingId === item.id ? (
+          <input
+            type="date"
+            name="date"
+            value={editForm.date || ""}
+            onChange={handleInputChange}
+            className="w-full rounded-md border border-gray-700 bg-gray-900 text-white px-2 py-1 text-sm"
+          />
+        ) : (
+          item.date
+        ),
+      width: "110px",
+    },
     {
       header: "Actions",
       accessor: (item) =>
@@ -197,7 +213,7 @@ const CuttingManagement = () => {
       <div className="mt-6 rounded-md bg-gray-900 p-4 text-sm text-gray-300">
         <p className="font-medium text-white">Instructions:</p>
         <ul className="ml-5 mt-2 list-disc">
-          <li>Click on any row to edit the cutting status and supervisor</li>
+          <li>Click on any row to edit the cutting status, supervisor, and date</li>
           <li>Save to update the status and notify the stitching department</li>
           <li>Items marked "Done" will be available for the stitching process</li>
           <li>Type a customer ID manually to load data</li>

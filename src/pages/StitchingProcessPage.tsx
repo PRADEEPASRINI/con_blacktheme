@@ -42,6 +42,7 @@ const StitchingProcess = () => {
     setEditForm({
       stitchingStatus: item.stitchingStatus,
       tailor: item.tailor || "",
+      date: formatDateForInput(item.date),
     });
     // Track edit initiation event
     trackAnalytics('Edit Initiated', { itemId: item.id, itemName: item.itemName });
@@ -105,7 +106,7 @@ const StitchingProcess = () => {
               name="tailor"
               value={editForm.tailor || ""}
               onChange={handleInputChange}
-              className="w-full rounded-md border border-textile-300 px-2 py-1 text-sm text-black" // Tailor field text color set to black
+              className="w-full rounded-md border border-textile-300 px-2 py-1 text-sm text-black"
               autoFocus
             >
               <option value="">Select Tailor</option>
@@ -131,7 +132,7 @@ const StitchingProcess = () => {
               name="stitchingStatus"
               value={editForm.stitchingStatus}
               onChange={handleInputChange}
-              className="w-full rounded-md border border-textile-300 px-2 py-1 text-sm text-black" // Stitching Status field text color set to black
+              className="w-full rounded-md border border-textile-300 px-2 py-1 text-sm text-black"
             >
               <option value="Not Started">Not Started</option>
               <option value="In Progress">In Progress</option>
@@ -156,7 +157,24 @@ const StitchingProcess = () => {
       ),
       width: "150px",
     },
-    { header: "Date", accessor: "date", width: "110px" },
+    {
+      header: "Date", 
+      accessor: (item) => {
+        if (editingId === item.id) {
+          return (
+            <input
+              type="date"
+              name="date"
+              value={editForm.date || item.date}
+              onChange={handleInputChange}
+              className="w-full rounded-md border border-textile-300 px-2 py-1 text-sm text-black"
+            />
+          );
+        }
+        return item.date;
+      }, 
+      width: "110px" 
+    },
     {
       header: "Actions",
       accessor: (item) => {
@@ -208,8 +226,8 @@ const StitchingProcess = () => {
   ];
 
   return (
-    <div className="container mx-auto max-w-6xl px-4 py-8 text-white"> {/* Outer page text color set to white */}
-      <h1 className="mb-8 text-3xl font-bold text-textile-900">Stitching Process</h1>
+    <div className="container mx-auto max-w-6xl px-4 py-8 bg-gray-900"> {/* Removed text-white, added dark background */}
+      <h1 className="mb-8 text-3xl font-bold text-white">Stitching Process</h1> {/* Title explicitly white */}
 
       <div className="mb-6 flex flex-col gap-2 md:flex-row md:items-center">
         <input
@@ -217,27 +235,30 @@ const StitchingProcess = () => {
           placeholder="Enter Customer ID (e.g., SFD12345)"
           value={searchId}
           onChange={(e) => setSearchId(e.target.value)}
-          className="w-full rounded-md border border-textile-300 px-3 py-2 text-textile-900 md:w-1/3 text-black" // Search field text color set to black
+          className="w-full rounded-md border border-textile-300 px-3 py-2 text-black md:w-1/3"
         />
         <button
           onClick={handleSearch}
-          className="mt-2 rounded-md bg-textile-900 px-4 py-2 text-sm font-medium text-white hover:bg-textile-800 md:mt-0"
+          className="mt-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 md:mt-0"
         >
           Search
         </button>
       </div>
 
-      <DataTable
-        columns={columns}
-        data={filteredItems}
-        keyExtractor={(item) => item.id}
-        onRowClick={handleRowClick}
-        isLoading={loading}
-      />
+      {/* Apply text-white to the DataTable container */}
+      <div className="text-white">
+        <DataTable
+          columns={columns}
+          data={filteredItems}
+          keyExtractor={(item) => item.id}
+          onRowClick={handleRowClick}
+          isLoading={loading}
+        />
+      </div>
 
       {selectedCustomerId && (
         <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-3">
-          <div className="rounded-md bg-white p-4 shadow-md">
+          <div className="rounded-md bg-white p-4 shadow-md text-gray-800"> {/* Added text color */}
             <h3 className="mb-2 text-lg font-medium text-textile-800">Tailor Assignments</h3>
             <ul className="space-y-2 text-sm">
               {["Ravi", "Anjali", "Krish", "Devi", "Amaan", "Nisha"].map(tailor => {
@@ -254,7 +275,7 @@ const StitchingProcess = () => {
             </ul>
           </div>
 
-          <div className="rounded-md bg-white p-4 shadow-md">
+          <div className="rounded-md bg-white p-4 shadow-md text-gray-800"> {/* Added text color */}
             <h3 className="mb-2 text-lg font-medium text-textile-800">Progress Summary</h3>
             <div className="space-y-3">
               {["Not Started", "In Progress", "Done"].map(status => {
@@ -283,7 +304,7 @@ const StitchingProcess = () => {
             </div>
           </div>
 
-          <div className="rounded-md bg-white p-4 shadow-md">
+          <div className="rounded-md bg-white p-4 shadow-md text-gray-800"> {/* Added text color */}
             <h3 className="mb-2 text-lg font-medium text-textile-800">Instructions</h3>
             <ul className="ml-5 list-disc text-sm text-textile-700">
               <li>Search Customer ID to view items</li>
